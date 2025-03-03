@@ -5,9 +5,9 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
 import app.keyboards as kb
-from app.funcs import write_json
+from app.funcs import write_json, read_json
 
-# from app.funcs import write_json
+# from app.funcs import write_json, read_json
 
 router = Router()
 
@@ -33,6 +33,15 @@ async def get_help(message: Message):
 # async def get_photo(message: Message):
 #     await message.answer_photo(photo='AgACAgIAAxkBAAIBJ2e-GwYi5AdjXkjnmK_tpRfreM09AAIb7jEbQ3zwSQz9C3y0sPuUAQADAgADeQADNgQ',
 #                                caption='Black...')
+
+@router.message(Command('get_user'))
+async def reg_first(message: Message):
+    data = await read_json()
+    if data != {}:
+        await message.answer(f'There is user. Name: {data["name"]}')
+    else:
+        await message.answer(f'There is no user...')
+
 
 
 @router.message(Command('sign'))
