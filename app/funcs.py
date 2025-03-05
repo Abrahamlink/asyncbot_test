@@ -25,3 +25,16 @@ async def read_json(user_id: int = -1, path='debug/user_data.json'):
 #     new_data = {'id': data['id'],
 #                 'user_data:': {'name': data['name'], 'number': data['number']}}
 #     return new_data
+
+async def numerate(path='debug/numerater.json'):
+    with open(path, 'r+', encoding='utf-8') as f:
+        try:
+            number = json.load(f)
+            number['number'] = int(number['number']) + 1
+        except Exception as e:
+            number = {'number': 1}
+
+        json.dump(number, f, ensure_ascii=False, indent=4)
+        f.close()
+        return number['number'] - 1
+

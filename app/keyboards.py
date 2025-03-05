@@ -10,7 +10,7 @@ main_inline = InlineKeyboardMarkup(inline_keyboard=[
 ])
 
 settings_inline = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='My sweet))', url='https://t.me/briefly52')]
+    [InlineKeyboardButton(text='Expense', callback_data='op_expense'), InlineKeyboardButton(text='Income', callback_data='op_income')]
 ])
 
 # Keyboards created with builder

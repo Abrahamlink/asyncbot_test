@@ -3,11 +3,11 @@ from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
+from datetime import datetime
 
 import app.keyboards as kb
-from app.funcs import write_json, read_json
+from app.funcs import write_json, read_json, numerate
 
-# from app.funcs import write_json, read_json
 
 router = Router()
 
@@ -16,6 +16,13 @@ class Reg(StatesGroup):
     id = State()
     name = State()
     number = State()
+
+class Operation(StatesGroup):
+    operation_id = State()
+    user_id = State()
+    date = State()
+    value = State()
+    module = State()
 
 
 '''Хэндлеры для Commands'''
@@ -67,6 +74,30 @@ async def reg_end(message: Message, state: FSMContext):
                          f'Your name is {data["name"]}\n'
                          f'Your number is {data["number"]}')
     await state.clear()
+
+
+@router.message(Command('expense'))
+async def operation_start(message: Message, state: FSMContext):
+    await state.set_state(Operation.value)
+    await state.update_data(operation_id=await numerate(), user_id=message.from_user.id, date=str(datetime.today()))
+    await message.answer('Write expense value:')
+
+
+@router.message(Operation.value)
+async def operation_goes(message: Message, state: FSMContext):
+    await state.set_state(Operation.module)
+    await state.update_data(value=message.text)
+    await message.answer('Choose, expense or income:', reply_markup=kb.settings_inline)
+
+
+@router.callback_query(Operation.module, F.data.startswith('op'))
+async def operation_end(callback: CallbackQuery, state: FSMContext):
+    await callback.answer(f'You have choice)')
+    await state.update_data(module=callback.data[3:])
+    data = await state.get_data()
+    print(data)
+    await state.clear()
+    await callback.message.edit_text('Succesfull!', reply_markup=None)
 
 
 '''Хэндлеры с F фильтром'''
