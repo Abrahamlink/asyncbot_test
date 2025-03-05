@@ -13,6 +13,7 @@ router = Router()
 
 
 class Reg(StatesGroup):
+    id = State()
     name = State()
     number = State()
 
@@ -36,7 +37,7 @@ async def get_help(message: Message):
 
 @router.message(Command('get_user'))
 async def reg_first(message: Message):
-    data = await read_json()
+    data = await read_json(user_id=message.from_user.id)
     if data != {}:
         await message.answer(f'There is user. Name: {data["name"]}')
     else:
@@ -52,7 +53,7 @@ async def reg_first(message: Message, state: FSMContext):
 
 @router.message(Reg.name)
 async def reg_second(message: Message, state: FSMContext):
-    await state.update_data(name=message.text)
+    await state.update_data(id=message.from_user.id, name=message.text)
     await state.set_state(Reg.number)
     await message.answer('Write your number (starts with "+"):')
 
